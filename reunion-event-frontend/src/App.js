@@ -115,14 +115,20 @@ function App() {
     }));
   };
 
-  const handleRemoveSelectedEvent = (event) => {
-    setEventRegistrationStatus((prevStatus) => ({
-      ...prevStatus,
-      [event.ID]: false,
-    }));
+  // Reset state when event status is cancelled
+  const handleCancelEvent = (event) => {
+    const eventKey = `${event.ID}-${event.startDate}`;
+  
     setSelectedEvents((prevSelectedEvents) =>
-      prevSelectedEvents.filter((selectedEvent) => selectedEvent.ID !== event.ID)
+      prevSelectedEvents.filter((selectedEvent) => `${selectedEvent.ID}-${selectedEvent.startDate}` !== eventKey)
     );
+  
+    // Reset the registration status for the canceled event
+    setEventRegistrationStatus((prevStatus) => {
+      const updatedStatus = { ...prevStatus };
+      delete updatedStatus[eventKey];
+      return updatedStatus;
+    });
   };
   
   return (
@@ -195,7 +201,7 @@ function App() {
               {selectedEvent.startDate} {selectedEvent.startTime} - {selectedEvent.endTime}: {selectedEvent.event}
               <Button
                 variant="danger"
-                onClick={() => handleRemoveSelectedEvent(selectedEvent)}
+                onClick={() => handleCancelEvent(selectedEvent)} 
               >
                 Close
               </Button>
