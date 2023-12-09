@@ -1,83 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { Form, FormControl, Button } from 'react-bootstrap';
-import './index.css'; // Import the index.css file
+  const handleAttendClick = (event) => {
+    const isEventRegistered = eventRegistrationStatus[event.ID];
 
-function App() {
-  const [events, setEvents] = useState([]);
-  const [visibleEventsPerDate, setVisibleEventsPerDate] = useState({});
-  const [searchQuery, setSearchQuery] = useState('');
-  const [autoCompleteSuggestions, setAutoCompleteSuggestions] = useState([]);
-  const [selectedEvent, setSelectedEvent] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const apiUrl = "https://v1.slashapi.com/events/google-sheets/FyqwlUzRL2/reunionevent";
-      const apiKey = "OB8Pbh3aEK3sGUoFayUrzYnV0wMP13fO7kMQQzMV";
-
-      try {
-        const response = await fetch(apiUrl, {
-          method: 'GET',
-          headers: {
-            'X-API-KEY': apiKey,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          // Log the data structure
-          console.log('API Data:', data);
-
-          // Ensure that the data has the expected structure
-          if (data && Array.isArray(data.data)) {
-            // Group events by date
-            const groupedEvents = groupEvents(data.data);
-            setEvents(groupedEvents);
-          } else {
-            console.error('Error: Unexpected data structure from API');
-          }
-        } else {
-          console.error(`Error: ${response.status}`);
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const groupEvents = (events) => {
-    // Group events by date
-    const groupedEvents = {};
-    events.forEach((event) => {
-      const date = event.startDate;
-      if (!groupedEvents[date]) {
-        groupedEvents[date] = [];
-      }
-      groupedEvents[date].push(event);
-    });
-
-    return groupedEvents;
+    if (isEventRegistered) {
+      // If the event is already registered, remove it from the registration status
+      setEventRegistrationStatus((prevStatus) => ({
+        ...prevStatus,
+        [event.ID]: false,
+      }));
+      setSelectedEvents((prevSelectedEvents) =>
+        prevSelectedEvents.filter((selectedEvent) => selectedEvent.ID !== event.ID)
+      );
+    } else {
+      // If the event is not registered, add it to the registration status and selected events
+      setEventRegistrationStatus((prevStatus) => ({
+        ...prevStatus,
+        [event.ID]: true,
+      }));
+      setSelectedEvents((prevSelectedEvents) => [...prevSelectedEvents, event]);
+    }
   };
 
-  const loadMore = (date) => {
-    // Increase the number of visible events for a specific date by 5
-    setVisibleEventsPerDate((prevVisibleEvents) => ({
-      ...prevVisibleEvents,
-      [date]: (prevVisibleEvents[date] || 0) + 5,
+  const handleRemoveSelectedEvent = (event) => {
+    setEventRegistrationStatus((prevStatus) => ({
+      ...prevStatus,
+      [event.ID]: false,
     }));
-  };
-
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-    const filteredSuggestions = events
-      .filter((event) =>
-        event.event.toLowerCase().includes(query.toLowerCase()) ||
-        event.category.toLowerCase().includes(query.toLowerCase())
-      )
-      .map((event) => event.event);
-    setAutoCompleteSuggestions(filteredSuggestions);
+    setSelectedEvents((prevSelectedEvents) =>
+      prevSelectedEvents.filter((selectedEvent) => selectedEvent.ID !== event.ID)
+    );
   };
 
   return (
@@ -120,6 +70,13 @@ function App() {
                 .map((event) => (
                   <li id="eventItem" key={event.ID}>
                     {event.startDate} {event.startTime} - {event.endTime}: {event.event}
+                    <Button
+                      variant={eventRegistrationStatus[event.ID] ? 'success' : 'primary'}
+                      onClick={() => handleAttendClick(event)}
+                      disabled={event.availability === 0}
+                    >
+                      {eventRegistrationStatus[event.ID] ? 'Registered' : 'Attend'}
+                    </Button>
                   </li>
                 ))}
             </ul>
@@ -129,8 +86,25 @@ function App() {
           </div>
         ))}
       </ul>
+
+      {/* Display Selected Events */}
+      <div>
+        <h2>Selected Events</h2>
+        <ul>
+          {selectedEvents.map((selectedEvent) => (
+            <li key={selectedEvent.ID}>
+              {selectedEvent.startDate} {selectedEvent.startTime} - {selectedEvent.endTime}: {selectedEvent.event}
+              <Button
+                variant="danger"
+                onClick={() => handleRemoveSelectedEvent(selectedEvent)}
+              >
+                Close
+              </Button>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
-}
 
 export default App;
