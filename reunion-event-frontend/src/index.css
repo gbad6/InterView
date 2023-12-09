@@ -11,3 +11,46 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Container Styles */
+#container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Title Styles */
+#title {
+  color: #c20430;
+}
+
+/* Search Input Styles */
+#searchInput {
+  margin-bottom: 20px;
+}
+
+/* Load More Button Styles */
+#loadMoreButton {
+  background-color: #d62f56;
+  border: none;
+}
+
+#loadMoreButton:hover {
+  background-color: #c20430;
+}
+
+/* Event List Styles */
+#eventList {
+  list-style-type: none;
+  padding: 0;
+}
+
+/* Event Item Styles */
+#eventItem {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #666666;
+  background-color: #fff;
+}

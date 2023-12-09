@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Form, FormControl, Button, Autocomplete } from 'react-bootstrap';
+import { Form, FormControl, Button } from 'react-bootstrap';
 import './index.css'; // Import the index.css file
-import styled from 'styled-components';
 
 function App() {
   const [events, setEvents] = useState([]);
@@ -72,8 +71,7 @@ function App() {
 
   const handleSearch = (query) => {
     setSearchQuery(query);
-    const filteredSuggestions = Object.values(events)
-      .flat()
+    const filteredSuggestions = events
       .filter((event) =>
         event.event.toLowerCase().includes(query.toLowerCase()) ||
         event.category.toLowerCase().includes(query.toLowerCase())
@@ -81,7 +79,7 @@ function App() {
       .map((event) => event.event);
     setAutoCompleteSuggestions(filteredSuggestions);
   };
-  
+
   return (
     <div id="container">
       <h1 id="title">University Reunion Event</h1>
@@ -106,7 +104,7 @@ function App() {
         )}
       </Form>
 
-        {/* Display Events based on Search and Selected Event */}
+      {/* Display Events based on Search and Selected Event */}
       <ul id="eventList">
         {Object.entries(events).map(([date, eventsForDate]) => (
           <div key={date}>
