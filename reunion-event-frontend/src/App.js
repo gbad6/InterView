@@ -2,14 +2,12 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Form, FormControl, Button, Table } from 'react-bootstrap';
 import './index.css'; // Import the index.css file
-import styled from 'styled-components';
 
 function App() {
   const [events, setEvents] = useState([]);
   const [visibleEventsPerDate, setVisibleEventsPerDate] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
   const [autoCompleteSuggestions, setAutoCompleteSuggestions] = useState([]);
-  const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedEvents, setSelectedEvents] = useState([]);
   const [eventRegistrationStatus, setEventRegistrationStatus] = useState({});
   const [selectedSuggestion, setSelectedSuggestion] = useState(null);
@@ -144,11 +142,25 @@ function App() {
           placeholder="Search events by name or category"
           value={searchQuery}
           onChange={(e) => handleSearch(e.target.value)}
+          aria-label="Search events by name or category"
         />
         {autoCompleteSuggestions.length > 0 && (
-          <ul>
+          <ul
+            role="listbox"
+            aria-label="Auto-complete suggestions"
+          >
             {autoCompleteSuggestions.map((suggestion, index) => (
-              <li key={index} onClick={() => handleSuggestionClick(suggestion)}>
+              <li
+                key={index}
+                role="option"
+                tabIndex="0"
+                onClick={() => handleSuggestionClick(suggestion)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSuggestionClick(suggestion);
+                  }
+                }}
+              >
                 {suggestion}
               </li>
             ))}
@@ -159,7 +171,10 @@ function App() {
       {/* Display Selected Events */}
       <div>
         <h2>Selected Events: </h2>
-        <ul>
+        <ul
+          role="list"
+          aria-label="Selected Events"
+        >
           {selectedEvents.map((selectedEvent) => (
             <li key={selectedEvent.ID}>
               {selectedEvent.startDate} {selectedEvent.startTime} - {selectedEvent.endTime}: {selectedEvent.event}
@@ -207,10 +222,13 @@ function App() {
                         <td>{event.availability}</td>
                         <td>
                           <Button
-                            id = "Button"
+                            id="Button"
                             variant={eventRegistrationStatus[eventKey] ? 'success' : 'primary'}
                             onClick={() => handleAttendClick(event)}
                             disabled={event.availability === 0}
+                            aria-label={`${
+                              eventRegistrationStatus[eventKey] ? 'Registered' : 'Attend'
+                            } for ${event.event}`}
                           >
                             {eventRegistrationStatus[eventKey] ? 'Registered' : 'Attend'}
                           </Button>
@@ -223,6 +241,7 @@ function App() {
                               id="Button2"
                               variant="outline-primary"
                               onClick={() => loadMore(date)}
+                              aria-label="Load more events"
                             >
                               Load More
                             </button>
