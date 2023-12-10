@@ -18,6 +18,28 @@ h2 {
   text-align:left ;
 }
 
+/*Table date*/
+h3{
+  color: #666666;
+  font-size: 1.2em;
+}
+
+/* Table */
+Table{
+  border-collapse: collapse;
+  margin: 25px 0;
+  font-size: 0.9em;
+  min-width: 400px;
+  border-radius: 5px 5px 0 0 ;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+} 
+
+/* Table Head */
+thead tr{
+  text-align: left;
+  font-weight: bold;
+}
 
 /* Container Styles */
 #container {
@@ -67,8 +89,6 @@ h2 {
 #eventDate{ 
   color: #666666;
   font-size: large;
-  
-
 }
 
 /* Button Style (Attend Buton)*/
@@ -99,7 +119,12 @@ td[role="Event-button"] {
   color: #d62f56;
 }
 
-/* Add this style for selected events in the Selected Events list */
-ul[aria-label="Selected Events"] li {
-  color: #d62f56;
+/* Selected Events: */
+ul{
+  background-color: #D62F56;
+  color: #fff;
+  border-radius: 5px 5px 5px 5px ;
+  overflow: hidden;
+  padding: auto;
+  width: fit-content;
 }

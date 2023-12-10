@@ -139,10 +139,10 @@ function App() {
                             onClick={() => Utils.handleAttendClick(event, eventKey, eventRegistrationStatus, setSelectedEvents, setEventRegistrationStatus)}
                             disabled={event.availability === 0}
                             aria-label={`${
-                              eventRegistrationStatus[eventKey] ? 'Registered' : 'Attend'
+                              eventRegistrationStatus[eventKey] ? 'Remove' : 'Attend'
                             } for ${event.event}`}
                           >
-                            {eventRegistrationStatus[eventKey] ? 'Registered' : 'Attend'}
+                            {eventRegistrationStatus[eventKey] ? 'Remove' : 'Attend'}
                           </Button>
                         </td>
                         <td>{event.startTime}</td>
