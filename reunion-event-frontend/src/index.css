@@ -12,6 +12,13 @@ code {
     monospace;
 }
 
+h2 {
+  color:#D62F56;
+  font-weight: bold;
+  text-align:left ;
+}
+
+
 /* Container Styles */
 #container {
   max-width: 800px;
@@ -23,7 +30,8 @@ code {
 
 /* Title Styles */
 #title {
-  color: #c20430;
+  text-align: center;
+  color: #666666;
 }
 
 /* Search Input Styles */
@@ -53,4 +61,32 @@ code {
   padding: 10px;
   border: 1px solid #666666;
   background-color: #fff;
+}
+
+/* Event Date */
+#eventDate{ 
+  color: #666666;
+  font-size: large;
+  
+
+}
+
+/* Button Style (Attend Buton)*/
+#Button {
+  font-weight: bold;
+  text-align: center;
+  background-color: #d62f56; 
+  color: #fff; 
+  padding: 10px 20px;
+  cursor: pointer; 
+}
+
+/* Button Style (Load More)*/
+#Button2{
+  text-decoration-line: underline;
+  color: #d62f56;
+  background-color: #fff; 
+  border: none;
+  margin:0 auto;
+  display:block;
 }

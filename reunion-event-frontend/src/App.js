@@ -134,8 +134,9 @@ function App() {
   return (
     <div id="container">
       <h1 id="title">University Reunion Event</h1>
-
+  
       {/* Search Input with Auto-complete */}
+      <h2>Search events: </h2>
       <Form>
         <FormControl
           id="searchInput"
@@ -154,47 +155,10 @@ function App() {
           </ul>
         )}
       </Form>
-
-        {/* Display Events list by date*/}
-        <ul id="eventList">
-          {Object.entries(events).map(([date, eventsForDate]) => (
-            <div key={date}>
-              <h2>{date}</h2>
-              <ul>
-                {eventsForDate
-                  .filter(
-                    (event) =>
-                      event.event.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                      event.category.toLowerCase().includes(searchQuery.toLowerCase())
-                  )
-                  .slice(0, visibleEventsPerDate[date] || 5)
-                  .map((event) => {
-                    const eventKey = `${event.ID}-${event.startDate}`;
-                    return (
-                      <li id="eventItem" key={eventKey}>
-                        {event.startDate} {event.startTime} - {event.endTime}: {event.event}
-                        <Button
-                          variant={eventRegistrationStatus[eventKey] ? 'success' : 'primary'}
-                          onClick={() => handleAttendClick(event)}
-                          disabled={event.availability === 0}
-                        >
-                          {eventRegistrationStatus[eventKey] ? 'Registered' : 'Attend'}
-                        </Button>
-                      </li>
-                    );
-                  })}
-              </ul>
-              {/* Display load more option */}
-              {visibleEventsPerDate[date] < eventsForDate.length && (
-                <button onClick={() => loadMore(date)}>Load More</button>
-              )}
-            </div>
-          ))}
-        </ul>
-
+      
       {/* Display Selected Events */}
       <div>
-        <h2>Selected Events</h2>
+        <h2>Selected Events: </h2>
         <ul>
           {selectedEvents.map((selectedEvent) => (
             <li key={selectedEvent.ID}>
@@ -209,6 +173,48 @@ function App() {
           ))}
         </ul>
       </div>
+  
+      {/* Display Events list by date*/}
+      <ul id="eventList">
+        {Object.entries(events).map(([date, eventsForDate]) => (
+          <div key={date}>
+            <p id="eventDate"> {date}</p>
+            <ul>
+              {eventsForDate
+                .filter(
+                  (event) =>
+                    event.event.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    event.category.toLowerCase().includes(searchQuery.toLowerCase())
+                )
+                .slice(0, visibleEventsPerDate[date] || 5)
+                .map((event) => {
+                  const eventKey = `${event.ID}-${event.startDate}`;
+                  return (
+                    <li id="eventItem" key={eventKey}>
+                      {event.startDate} {event.startTime} - {event.endTime}: {event.event}
+                      <Button 
+                        id = "Button"
+                        variant={eventRegistrationStatus[eventKey] ? 'success' : 'primary'}
+                        onClick={() => handleAttendClick(event)}
+                        disabled={event.availability === 0}
+                        
+                      >
+                        {eventRegistrationStatus[eventKey] ? 'Registered' : 'Attend'}
+                      </Button>
+                    </li>
+                  );
+                })}
+            </ul>
+            {/* Display load more option */}
+            {visibleEventsPerDate[date] < eventsForDate.length && (
+              <button 
+              id="Button2"
+              onClick={() => loadMore(date)}>Load More
+              </button>
+            )}
+          </div>
+        ))}
+      </ul>
     </div>
   );
 }
