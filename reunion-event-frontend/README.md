@@ -5,6 +5,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 ## Limitations
 
 Close and Action buttons aren't in sync
+Turn events by date to dropdown
 
 ## Available Scripts
 
