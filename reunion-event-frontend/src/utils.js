@@ -109,16 +109,23 @@ export function handleAttendClick(event, eventKey, eventRegistrationStatus, setS
         setSelectedEvents((prevSelectedEvents) =>
             prevSelectedEvents.filter((selectedEvent) => `${selectedEvent.ID}-${selectedEvent.startDate}` !== eventKey)
         );
+
+        // Reset the registration status for the canceled event
+        setEventRegistrationStatus((prevStatus) => {
+            const updatedStatus = { ...prevStatus };
+            delete updatedStatus[eventKey];
+            return updatedStatus;
+        });
     } else {
         // If the event is not registered, add it to the selected events
         setSelectedEvents((prevSelectedEvents) => [...prevSelectedEvents, event]);
-    }
 
-    // Toggle the registration status for the clicked event
-    setEventRegistrationStatus((prevStatus) => ({
-        ...prevStatus,
-        [eventKey]: !isEventRegistered,
-    }));
+        // Toggle the registration status for the clicked event
+        setEventRegistrationStatus((prevStatus) => ({
+            ...prevStatus,
+            [eventKey]: true,
+        }));
+    }
 }
 
 // Handles the cancellation of an event registration
@@ -136,4 +143,14 @@ export function handleCancelEvent(event, setSelectedEvents, setEventRegistration
         delete updatedStatus[eventKey];
         return updatedStatus;
     });
+}
+
+// Check if two time intervals overlap
+export function checkTimeOverlap(startTime1, endTime1, startTime2, endTime2) {
+    const start1 = new Date(`01/01/2020 ${startTime1}`);
+    const end1 = new Date(`01/01/2020 ${endTime1}`);
+    const start2 = new Date(`01/01/2020 ${startTime2}`);
+    const end2 = new Date(`01/01/2020 ${endTime2}`);
+  
+    return start1 < end2 && end1 > start2;
 }

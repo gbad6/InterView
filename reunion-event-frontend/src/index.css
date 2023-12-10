@@ -90,3 +90,16 @@ h2 {
   margin:0 auto;
   display:block;
 }
+
+
+/* Add this style for clickable events */
+td[role="Event-button"] {
+  cursor: pointer;
+  text-decoration: underline;
+  color: #d62f56;
+}
+
+/* Add this style for selected events in the Selected Events list */
+ul[aria-label="Selected Events"] li {
+  color: #d62f56;
+}

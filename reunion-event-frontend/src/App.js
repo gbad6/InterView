@@ -83,7 +83,7 @@ function App() {
                 variant="danger"
                 onClick={() => Utils.handleCancelEvent(selectedEvent, setSelectedEvents, setEventRegistrationStatus)}
               >
-                Close
+                X
               </Button>
             </li>
           ))}
@@ -98,13 +98,12 @@ function App() {
           {/* Table to display events for the current date */}
           <Table striped bordered hover>
             <thead>
-              {/* Table header */}
+              {/* Table header with reordered columns */}
               <tr>
-                <th>Time</th>
-                <th>Event</th>
-                <th>Category</th>
-                <th>Availability</th>
                 <th>Action</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Event Name</th>
               </tr>
             </thead>
             <tbody>
@@ -117,16 +116,22 @@ function App() {
                 )
                 .slice(0, visibleEventsPerDate[date] || 5)
                 .map((event, index, array) => {
-                  const eventKey = `${event.ID}-${event.startDate}`;
+                  const eventKey = `${event.ID}-${event.startTime}-${event.endTime}`;
+                  const isEventRegistered = eventRegistrationStatus[eventKey];
+
+                  // Check if the event has overlapping time slots with any selected event
+                  const hasOverlappingTime = selectedEvents.some((selectedEvent) => {
+                      return (
+                          selectedEvent.startDate === event.startDate &&
+                          selectedEvent.ID !== event.ID && // Exclude the current event from the check
+                          Utils.checkTimeOverlap(selectedEvent.startTime, selectedEvent.endTime, event.startTime, event.endTime)
+                      );
+                  });
+
                   return (
                     <React.Fragment key={eventKey}>
                       {/* Table row for each event */}
                       <tr>
-                        <td>{`${event.startTime} - ${event.endTime}`}</td>
-                        <td>{event.event}</td>
-                        <td>{event.category}</td>
-                        <td>{event.availability}</td>
-                        {/* Button to attend or unregister from an event */}
                         <td>
                           <Button
                             id="Button"
@@ -140,11 +145,25 @@ function App() {
                             {eventRegistrationStatus[eventKey] ? 'Registered' : 'Attend'}
                           </Button>
                         </td>
+                        <td>{event.startTime}</td>
+                        <td>{event.endTime}</td>
+                        <td
+                          role="Event-button"
+                          tabIndex="0"
+                          onClick={() => Utils.handleAttendClick(event, eventKey, eventRegistrationStatus, setSelectedEvents, setEventRegistrationStatus)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              Utils.handleAttendClick(event, eventKey, eventRegistrationStatus, setSelectedEvents, setEventRegistrationStatus);
+                            }
+                          }}
+                        >
+                          {event.event}
+                        </td>
                       </tr>
                       {/* Display 'Load More' button if there are more events to show */}
                       {index === array.length - 1 && visibleEventsPerDate[date] < eventsForDate.length && (
                         <tr key="loadMore">
-                          <td colSpan="5">
+                          <td colSpan="4">
                             <Button
                               id="Button2"
                               variant="outline-primary"
