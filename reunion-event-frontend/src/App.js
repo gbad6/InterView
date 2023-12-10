@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Form, FormControl, Button, Autocomplete } from 'react-bootstrap';
+import { Form, FormControl, Button, Table } from 'react-bootstrap';
 import './index.css'; // Import the index.css file
 import styled from 'styled-components';
 
@@ -9,11 +9,10 @@ function App() {
   const [visibleEventsPerDate, setVisibleEventsPerDate] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
   const [autoCompleteSuggestions, setAutoCompleteSuggestions] = useState([]);
-  const [selectedSuggestion, setSelectedSuggestion] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedEvents, setSelectedEvents] = useState([]);
-  // Define state to track registration status for each event
   const [eventRegistrationStatus, setEventRegistrationStatus] = useState({});
+  const [selectedSuggestion, setSelectedSuggestion] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,12 +29,8 @@ function App() {
 
         if (response.ok) {
           const data = await response.json();
-          // Log the data structure
-          console.log('API Data:', data);
 
-          // Ensure that the data has the expected structure
           if (data && Array.isArray(data.data)) {
-            // Group events by date
             const groupedEvents = groupEvents(data.data);
             setEvents(groupedEvents);
           } else {
@@ -53,16 +48,14 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // Initialize visible events per date with a default value greater than 5
     const initialVisibleEvents = {};
     Object.keys(events).forEach((date) => {
-      initialVisibleEvents[date] = 5; // Adjust the default value as needed
+      initialVisibleEvents[date] = 5;
     });
     setVisibleEventsPerDate(initialVisibleEvents);
   }, [events]);
 
   const groupEvents = (events) => {
-    // Group events by date
     const groupedEvents = {};
     events.forEach((event) => {
       const date = event.startDate;
@@ -76,7 +69,6 @@ function App() {
   };
 
   const loadMore = (date) => {
-    // Increase the number of visible events for a specific date by 5
     setVisibleEventsPerDate((prevVisibleEvents) => ({
       ...prevVisibleEvents,
       [date]: (prevVisibleEvents[date] || 0) + 5,
@@ -85,11 +77,10 @@ function App() {
 
   const handleSearch = (query) => {
     setSearchQuery(query);
+
     if (query === '') {
-      // If the search query is empty, reset the autocomplete suggestions
       setAutoCompleteSuggestions([]);
     } else {
-      // Perform the search and update the autocomplete suggestions
       const filteredSuggestions = Object.values(events)
         .flat()
         .filter((event) =>
@@ -103,55 +94,47 @@ function App() {
   };
 
   const handleSuggestionClick = (suggestion) => {
-    // Set the selected suggestion
     setSelectedSuggestion(suggestion);
-    // Reset the suggestions
     setAutoCompleteSuggestions([]);
-    // Update the search query with the selected suggestion
     setSearchQuery(suggestion);
   };
 
   const handleAttendClick = (event) => {
     const eventKey = `${event.ID}-${event.startDate}`;
     const isEventRegistered = eventRegistrationStatus[eventKey];
-  
+
     if (isEventRegistered) {
-      // If the event is already registered, remove it from the registration status
       setSelectedEvents((prevSelectedEvents) =>
         prevSelectedEvents.filter((selectedEvent) => `${selectedEvent.ID}-${selectedEvent.startDate}` !== eventKey)
       );
     } else {
-      // If the event is not registered, add it to the registration status and selected events
       setSelectedEvents((prevSelectedEvents) => [...prevSelectedEvents, event]);
     }
-  
-    // Toggle the registration status for the clicked event
+
     setEventRegistrationStatus((prevStatus) => ({
       ...prevStatus,
       [eventKey]: !isEventRegistered,
     }));
   };
 
-  // Reset state when event status is cancelled
   const handleCancelEvent = (event) => {
     const eventKey = `${event.ID}-${event.startDate}`;
-  
+
     setSelectedEvents((prevSelectedEvents) =>
       prevSelectedEvents.filter((selectedEvent) => `${selectedEvent.ID}-${selectedEvent.startDate}` !== eventKey)
     );
-  
-    // Reset the registration status for the canceled event
+
     setEventRegistrationStatus((prevStatus) => {
       const updatedStatus = { ...prevStatus };
       delete updatedStatus[eventKey];
       return updatedStatus;
     });
   };
-  
+
   return (
     <div id="container">
       <h1 id="title">University Reunion Event</h1>
-  
+
       {/* Search Input with Auto-complete */}
       <h2>Search events: </h2>
       <Form>
@@ -172,7 +155,7 @@ function App() {
           </ul>
         )}
       </Form>
-      
+
       {/* Display Selected Events */}
       <div>
         <h2>Selected Events: </h2>
@@ -182,7 +165,7 @@ function App() {
               {selectedEvent.startDate} {selectedEvent.startTime} - {selectedEvent.endTime}: {selectedEvent.event}
               <Button
                 variant="danger"
-                onClick={() => handleCancelEvent(selectedEvent)} 
+                onClick={() => handleCancelEvent(selectedEvent)}
               >
                 Close
               </Button>
@@ -190,13 +173,22 @@ function App() {
           ))}
         </ul>
       </div>
-  
-      {/* Display Events list by date*/}
-      <ul id="eventList">
-        {Object.entries(events).map(([date, eventsForDate]) => (
-          <div key={date}>
-            <p id="eventDate"> {date}</p>
-            <ul>
+
+      {/* Display Events list by date */}
+      {Object.entries(events).map(([date, eventsForDate]) => (
+        <div key={date}>
+          <h3>{date}</h3>
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Event</th>
+                <th>Category</th>
+                <th>Availability</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
               {eventsForDate
                 .filter(
                   (event) =>
@@ -204,34 +196,46 @@ function App() {
                     event.category.toLowerCase().includes(searchQuery.toLowerCase())
                 )
                 .slice(0, visibleEventsPerDate[date] || 5)
-                .map((event) => {
+                .map((event, index, array) => {
                   const eventKey = `${event.ID}-${event.startDate}`;
                   return (
-                    <li id="eventItem" key={eventKey}>
-                      {event.startDate} {event.startTime} - {event.endTime}: {event.event}
-                      <Button 
-                        id = "Button"
-                        variant={eventRegistrationStatus[eventKey] ? 'success' : 'primary'}
-                        onClick={() => handleAttendClick(event)}
-                        disabled={event.availability === 0}
-                        
-                      >
-                        {eventRegistrationStatus[eventKey] ? 'Registered' : 'Attend'}
-                      </Button>
-                    </li>
+                    <React.Fragment key={eventKey}>
+                      <tr>
+                        <td>{`${event.startTime} - ${event.endTime}`}</td>
+                        <td>{event.event}</td>
+                        <td>{event.category}</td>
+                        <td>{event.availability}</td>
+                        <td>
+                          <Button
+                            id = "Button"
+                            variant={eventRegistrationStatus[eventKey] ? 'success' : 'primary'}
+                            onClick={() => handleAttendClick(event)}
+                            disabled={event.availability === 0}
+                          >
+                            {eventRegistrationStatus[eventKey] ? 'Registered' : 'Attend'}
+                          </Button>
+                        </td>
+                      </tr>
+                      {index === array.length - 1 && visibleEventsPerDate[date] < eventsForDate.length && (
+                        <tr key="loadMore">
+                          <td colSpan="5">
+                            <button
+                              id="Button2"
+                              variant="outline-primary"
+                              onClick={() => loadMore(date)}
+                            >
+                              Load More
+                            </button>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
                   );
                 })}
-            </ul>
-            {/* Display load more option */}
-            {visibleEventsPerDate[date] < eventsForDate.length && (
-              <button 
-              id="Button2"
-              onClick={() => loadMore(date)}>Load More
-              </button>
-            )}
-          </div>
-        ))}
-      </ul>
+            </tbody>
+          </Table>
+        </div>
+      ))}
     </div>
   );
 }
