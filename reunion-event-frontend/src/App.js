@@ -9,6 +9,7 @@ function App() {
   const [visibleEventsPerDate, setVisibleEventsPerDate] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
   const [autoCompleteSuggestions, setAutoCompleteSuggestions] = useState([]);
+  const [selectedSuggestion, setSelectedSuggestion] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [selectedEvents, setSelectedEvents] = useState([]);
   // Define state to track registration status for each event
@@ -84,14 +85,30 @@ function App() {
 
   const handleSearch = (query) => {
     setSearchQuery(query);
-    const filteredSuggestions = Object.values(events)
-      .flat()
-      .filter((event) =>
-        event.event.toLowerCase().includes(query.toLowerCase()) ||
-        event.category.toLowerCase().includes(query.toLowerCase())
-      )
-      .map((event) => event.event);
-    setAutoCompleteSuggestions(filteredSuggestions);
+    if (query === '') {
+      // If the search query is empty, reset the autocomplete suggestions
+      setAutoCompleteSuggestions([]);
+    } else {
+      // Perform the search and update the autocomplete suggestions
+      const filteredSuggestions = Object.values(events)
+        .flat()
+        .filter((event) =>
+          event.event.toLowerCase().includes(query.toLowerCase()) ||
+          event.category.toLowerCase().includes(query.toLowerCase())
+        )
+        .map((event) => event.event);
+
+      setAutoCompleteSuggestions(filteredSuggestions);
+    }
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    // Set the selected suggestion
+    setSelectedSuggestion(suggestion);
+    // Reset the suggestions
+    setAutoCompleteSuggestions([]);
+    // Update the search query with the selected suggestion
+    setSearchQuery(suggestion);
   };
 
   const handleAttendClick = (event) => {
@@ -148,7 +165,7 @@ function App() {
         {autoCompleteSuggestions.length > 0 && (
           <ul>
             {autoCompleteSuggestions.map((suggestion, index) => (
-              <li key={index} onClick={() => setSelectedEvent(suggestion)}>
+              <li key={index} onClick={() => handleSuggestionClick(suggestion)}>
                 {suggestion}
               </li>
             ))}
