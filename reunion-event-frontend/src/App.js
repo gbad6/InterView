@@ -77,8 +77,8 @@ function App() {
           {/* Map through selected events and display them */}
           {selectedEvents.map((selectedEvent) => (
             <li key={selectedEvent.ID}>
-              {selectedEvent.startDate} {selectedEvent.startTime} - {selectedEvent.endTime}: {selectedEvent.event}
-              {/* Button to cancel a selected event */}
+              {/* Omit the date and time information */}
+              {selectedEvent.event}
               <Button
                 variant="danger"
                 onClick={() => Utils.handleCancelEvent(selectedEvent, setSelectedEvents, setEventRegistrationStatus)}
